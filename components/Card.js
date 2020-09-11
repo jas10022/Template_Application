@@ -1,0 +1,105 @@
+import React from 'react';
+import { withNavigation } from '@react-navigation/compat';
+import PropTypes from 'prop-types';
+import { StyleSheet, Dimensions, Image, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
+import { Block, Text, theme } from 'galio-framework';
+
+import { argonTheme } from '../constants';
+
+
+class Card extends React.Component {
+  onEventClick(item){
+    console.log(item.date);
+    this.props.navigation.navigate('Calendar', {selectedEvent:item.date});
+    //console.log(item.date);
+    //console.log('click');
+  };
+
+  render() {
+    const { navigation, item, horizontal, full, style, ctaColor, imageStyle } = this.props;
+    
+    const imageStyles = [
+      full ? styles.fullImage : styles.horizontalImage,
+      imageStyle
+    ];
+    const cardContainer = [styles.card, styles.shadow, style];
+    const imgContainer = [styles.imageContainer,
+      horizontal ? styles.horizontalStyles : styles.verticalStyles,
+      styles.shadow
+    ];
+    //navigation.navigate('Calendar', {selectedEvent:item.date})
+    return (
+      <Block row={horizontal} card flex style={cardContainer}>
+        <TouchableWithoutFeedback>
+          <Block flex style={imgContainer}>
+            <Image source={{uri: item.image}} style={imageStyles} />
+          </Block>
+        </TouchableWithoutFeedback>
+          <Block flex space="between" style={styles.cardDescription}>
+            <Text size={14} style={styles.cardTitle}>{item.title}</Text>
+            <TouchableOpacity onPress={() => this.onEventClick(item)}>
+              <Text size={12} muted={!ctaColor} color={ctaColor || argonTheme.COLORS.ACTIVE} bold>{item.cta}</Text>
+            </TouchableOpacity>
+          </Block>
+      </Block>
+    );
+  }
+}
+
+Card.propTypes = {
+  item: PropTypes.object,
+  horizontal: PropTypes.bool,
+  full: PropTypes.bool,
+  ctaColor: PropTypes.string,
+  imageStyle: PropTypes.any,
+}
+
+const styles = StyleSheet.create({
+  card: {
+    backgroundColor: theme.COLORS.WHITE,
+    marginVertical: theme.SIZES.BASE,
+    borderWidth: 0,
+    minHeight: 114,
+    marginBottom: 16
+  },
+  cardTitle: {
+    flex: 1,
+    flexWrap: 'wrap',
+    paddingBottom: 6
+  },
+  cardDescription: {
+    padding: theme.SIZES.BASE / 2
+  },
+  imageContainer: {
+    borderRadius: 3,
+    elevation: 1,
+    overflow: 'hidden',
+  },
+  image: {
+    // borderRadius: 3,
+  },
+  horizontalImage: {
+    height: 122,
+    width: 'auto',
+  },
+  horizontalStyles: {
+    borderTopRightRadius: 0,
+    borderBottomRightRadius: 0,
+  },
+  verticalStyles: {
+    borderBottomRightRadius: 0,
+    borderBottomLeftRadius: 0
+  },
+  fullImage: {
+    height: 215
+  },
+  shadow: {
+    shadowColor: theme.COLORS.BLACK,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    shadowOpacity: 0.1,
+    elevation: 2,
+  },
+});
+
+export default withNavigation(Card);
